@@ -1,0 +1,23 @@
+- name: Collect basic server details
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Show key facts
+      ansible.builtin.debug:
+        msg:
+          - "Hostname: {{ ansible_hostname }}"
+          - "OS: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Kernel: {{ ansible_kernel }}"
+          - "IP: {{ ansible_default_ipv4.address | default('n/a') }}"
+          - "CPUs: {{ ansible_processor_vcpus }}"
+          - "RAM MB: {{ ansible_memtotal_mb }}"
+          - "Uptime (s): {{ ansible_uptime_seconds }}"
+
+    - name: Disk usage
+      ansible.builtin.command: df -h /
+      register: df_out
+      changed_when: false
+
+    - name: Show disk usage
+      ansible.builtin.debug:
+        var: df_out.stdout_lines
